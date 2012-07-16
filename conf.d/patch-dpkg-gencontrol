@@ -1,0 +1,38 @@
+#!/bin/sh -e
+
+ubuntu_patch() {
+patch -f /usr/bin/dpkg-gencontrol << 'EOF'
+--- /usr/bin/dpkg-gencontrol.orig       2010-04-15 17:23:43.000000000 +0000
++++ /usr/bin/dpkg-gencontrol    2010-06-03 12:11:23.000000000 +0000
+@@ -291,6 +291,7 @@
+     if (!$c) {
+         chdir("$packagebuilddir") ||
+             syserr(_g("chdir for du to \`%s'"), $packagebuilddir);
++        system("find -type f | xargs touch"); # workaround for evil aufs bug
+         exec("du", "-k", "-s", ".") or syserr(_g("exec %s"), "du");
+     }
+     my $duo = '';
+EOF
+}
+
+debian_patch() {
+patch -f /usr/bin/dpkg-gencontrol << 'EOF'
+--- /usr/bin/dpkg-gencontrol.orig       2010-06-23 17:51:35.000000000 +0000
++++ /usr/bin/dpkg-gencontrol    2010-06-23 17:52:28.000000000 +0000
+@@ -288,6 +288,7 @@
+     if (!$c) {
+         chdir("$packagebuilddir") ||
+             syserr(_g("chdir for du to \`%s'"), $packagebuilddir);
++        system("find -type f | xargs touch"); # workaround for evil aufs bug
+         exec("du","-k","-s",".") or &syserr(_g("exec du"));
+     }
+     my $duo = '';
+EOF
+}
+
+case "$DISTRO" in
+    ubuntu) ubuntu_patch ;;
+    debian) debian_patch ;;
+    *) fatal "DISTRO is not set or not recognized" ;;
+esac
+

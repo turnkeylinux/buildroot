@@ -1,0 +1,36 @@
+build-essential
+fakeroot
+debhelper
+cdbs
+git-core
+aptitude
+docbook-utils
+xmlto
+
+faketime
+
+/* di-live */
+libdebconfclient0-dev
+libdebian-installer4-dev
+#ifdef UBUNTU
+libparted0-dev
+dh-di
+#endif
+#ifdef DEBIAN
+libparted1.8-dev
+#endif
+
+/* joomla15 */
+unzip
+
+/* pythondialog */
+python-all-dev 
+python-all
+python-support
+
+/* gfxboot-theme */
+#ifdef UBUNTU
+gfxboot
+#endif
+
+
