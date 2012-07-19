@@ -6,8 +6,14 @@ git-core
 aptitude
 docbook-utils
 xmlto
+unzip
 
 faketime
+
+/* pythondialog */
+python-all-dev
+python-all
+python-support
 
 /* di-live */
 libdebconfclient0-dev
@@ -19,18 +25,3 @@ dh-di
 #ifdef DEBIAN
 libparted1.8-dev
 #endif
-
-/* joomla15 */
-unzip
-
-/* pythondialog */
-python-all-dev 
-python-all
-python-support
-
-/* gfxboot-theme */
-#ifdef UBUNTU
-gfxboot
-#endif
-
-
