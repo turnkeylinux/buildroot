@@ -15,13 +15,3 @@ python-all-dev
 python-all
 python-support
 
-/* di-live */
-libdebconfclient0-dev
-libdebian-installer4-dev
-#ifdef UBUNTU
-libparted0-dev
-dh-di
-#endif
-#ifdef DEBIAN
-libparted1.8-dev
-#endif
