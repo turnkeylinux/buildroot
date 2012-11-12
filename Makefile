@@ -1,4 +1,4 @@
-RELEASE ?= debian/squeeze
+RELEASE ?= debian/wheezy
 
 default: root.patched
 
