@@ -1,4 +1,5 @@
-pyproject-common
 turnkey-pylib
+turnkey-pylib
+pyproject-common
 autoversion
 
