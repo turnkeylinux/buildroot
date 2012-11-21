@@ -7,15 +7,15 @@ fatal() {
 
 ubuntu_sources() {
 cat >/etc/apt/sources.list<<EOF
-deb http://de.archive.ubuntu.com/ubuntu $CODENAME main
-deb http://de.archive.ubuntu.com/ubuntu $CODENAME-updates main
-deb http://de.archive.ubuntu.com/ubuntu $CODENAME-security main
+deb http://archive.ubuntu.com/ubuntu $CODENAME main
+deb http://archive.ubuntu.com/ubuntu $CODENAME-updates main
+deb http://archive.ubuntu.com/ubuntu $CODENAME-security main
 EOF
 }
 
 debian_sources() {
 cat >/etc/apt/sources.list<<EOF
-deb http://ftp.de.debian.org/debian $CODENAME main
+deb http://cdn.debian.org/debian/ $CODENAME main
 deb http://security.debian.org/ $CODENAME/updates main
 EOF
 }
