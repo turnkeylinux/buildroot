@@ -7,10 +7,14 @@ include $(FAB_SHARE_PATH)/product.mk
 
 define root.patched/post
 	@echo;
-	@echo "Reminder: install turnkey build deps if available";
-	@echo "    eg. fab-install --no-deps $O/root.patched plan/manual";
+	@echo "Install turnkey build deps:";
+	@echo "    if already available in pool:";
+	@echo "      fab-install --no-deps $O/root.patched plan/manual";
+	@echo "    else:";
+	@echo "      for package in plan/manual; cd package; build-deb";
+	@echo "      copy debs to $O/root.patched and dpkg -i ...";
 	@echo;
-	@echo "Reminder: copy generated buildroot to buildroots folder";
+	@echo "Tip: copy generated buildroot to buildroots folder";
 	@echo "    eg. rsync --delete -Hac -v $O/root.patched/ $(FAB_PATH)/buildroots/$(shell basename $(RELEASE))-$(FAB_ARCH)/";
 endef
 
