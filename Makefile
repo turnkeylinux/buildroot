@@ -20,3 +20,8 @@ define root.patched/post
 	@echo "    eg. rsync --delete -Hac -v $O/root.patched/ $(TARGET_RSYNC)";
 endef
 
+define root.patched/cleanup
+        # kill stray processes
+        fuser -k $O/root.patched || true
+endef
+
