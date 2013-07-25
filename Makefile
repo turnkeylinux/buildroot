@@ -1,4 +1,6 @@
-RELEASE ?= debian/squeeze
+ifndef RELEASE
+$(error RELEASE not defined, e.g., debian/wheezy)
+endif
 
 default: root.patched
 
