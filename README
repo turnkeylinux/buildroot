@@ -1,0 +1,48 @@
+build
+-----
+
+export RELEASE=debian/::CODENAME::
+make clean
+make
+
+if this is a transition, the build will break
+'''''''''''''''''''''''''''''''''''''''''''''
+
+- update conf.d/patch-dpkg-gencontrol
+    - diff -urN dpkg-gencontrol.orig dpkg-gencontrol
+
+- cleanup and make again
+
+install custom build deps
+-------------------------
+
+if already available in pool
+''''''''''''''''''''''''''''
+
+PACKAGES="turnkey-pylib pyproject-common autoversion"
+POOLPATH=$FAB_PATH/pools/$(basename $RELEASE)
+fab-install --pool=$POOLPATH --no-deps build/root.patched $PACKAGES
+
+if this is a transition
+'''''''''''''''''''''''
+
+mkdir build/root.patched/root/builddeps
+cp -a /turnkey/public/turnkey-pylib build/root.patched/root/builddeps
+cp -a /turnkey/public/pyproject build/root.patched/root/builddeps
+cp -a /turnkey/private/autoversion build/root.patched/root/builddeps
+
+fab-chroot build/root.patched
+for p in $(ls /root/builddeps); do
+    cd /root/builddeps/$p
+    build-deb
+    dpkg -i ../${p}*.deb
+done
+
+rm -rf /root/builddeps
+exit
+
+copy generated buildroot to buildroots folder
+---------------------------------------------
+
+rsync --delete -Hac -v build/root.patched/ $FAB_PATH/buildroots/$(basename $RELEASE)/
+
