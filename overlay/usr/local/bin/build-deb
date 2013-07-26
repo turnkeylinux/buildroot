@@ -1,0 +1,66 @@
+#!/bin/bash -e
+# auto-generate changelog and build deb package
+
+fatal() { echo "fatal: $@" 1>&2; exit 1; }
+
+get_version_tagged() {
+    LATEST_TAG=$(git describe --abbrev=0)
+    LATEST_COMMIT=$(git rev-list -n 1 --all --abbrev-commit --abbrev=7)
+    COMMITS_SINCE_TAG=$(git --no-pager log $LATEST_TAG.. --reverse --oneline | wc -l)
+
+    VERSION=$(echo $LATEST_TAG | sed "s|v||")+$COMMITS_SINCE_TAG+g$LATEST_COMMIT
+    echo $VERSION
+}
+
+get_version_datestamp() {
+    LATEST_COMMIT=$(git rev-list -n 1 --all --abbrev-commit --abbrev=8)
+    
+    D=$(git --no-pager log -n 1 $LATEST_COMMIT --pretty=format:%ai | cut -d " " -f 1)
+    D_YEAR=$(echo $D | cut -d "-" -f 1)
+    D_MONTH=$(echo $D | cut -d "-" -f 2 | sed "s|^0||")
+    D_DAY=$(echo $D | cut -d "-" -f 3 | sed "s|^0||")
+    DATE=$D_YEAR.$D_MONTH.$D_DAY
+
+    T=$(TZ=UTC git --no-pager log -n 1 $LATEST_COMMIT --date=local --pretty=format:%ad | cut -d " " -f 4)
+    TIME=$(echo $T | sed "s|:|.|g")
+
+    VERSION=0+$DATE+$TIME+$LATEST_COMMIT
+    echo $VERSION
+}
+
+get_version() {
+    if [ "$(git describe --abbrev=0 >/dev/null 2>&1; echo $?)" == "0" ]; then
+        echo $(get_version_tagged)
+    else
+        echo $(get_version_datestamp)
+    fi
+}
+
+[ -e debian/control ] || fatal "debian/control does not exist"
+[ -e debian/changelog ] && fatal "debian/changelog already exists"
+which dpkg-buildpackage >/dev/null || fatal "dpkg-buildpackage not in path"
+
+release=$(lsb_release -c -s)
+version=$(get_version)
+arch=$(dpkg --print-architecture)
+name=$(grep Package debian/control | head -n 1 | cut -d " " -f 2)
+
+[ -n $release ] || fatal "could not identify release"
+[ -n $version ] || fatal "could not identify version"
+[ -n $arch ] || fatal "could not identify arch"
+[ -n $name ] || fatal "could not identify name"
+
+cat > debian/changelog <<EOF
+$name ($version) $release; urgency=low
+
+  * Auto generated with $(basename $0)
+
+ -- Alon Swartz <alon@turnkeylinux.org>  $(date -R)
+EOF
+
+dpkg-buildpackage -b -tc -us -uc
+
+rm -f clean
+rm -f debian/changelog
+rm -f ../${name}_${version}_${arch}.changes
+
