@@ -1,6 +1,7 @@
 build
 -----
 
+export FAB_POOL=y
 export RELEASE=debian/::CODENAME::
 make clean
 make
@@ -32,7 +33,7 @@ cp -a /turnkey/public/pyproject build/root.patched/root/builddeps
 cp -a /turnkey/private/autoversion build/root.patched/root/builddeps
 
 fab-chroot build/root.patched
-for p in $(ls /root/builddeps); do
+for p in turnkey-pylib pyproject autoversion; do
     cd /root/builddeps/$p
     build-deb
     dpkg -i ../${p}*.deb
