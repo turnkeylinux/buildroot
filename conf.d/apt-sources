@@ -20,11 +20,19 @@ deb http://security.debian.org/ $CODENAME/updates main
 EOF
 }
 
+rpi_sources() {
+cat >/etc/apt/sources.list<<EOF
+deb http://mirrordirector.raspbian.org/raspbian wheezy main firmware
+deb http://archive.raspberrypi.org/debian wheezy main
+EOF
+}
+
 [ -n "$CODENAME" ] || fatal "CODENAME is not set"
 
 case "$DISTRO" in
     ubuntu) ubuntu_sources ;;
     debian) debian_sources ;;
+    rpi) rpi_sources ;;
     *) fatal "DISTRO is not set or not recognized" ;;
 esac
 
