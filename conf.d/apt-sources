@@ -32,7 +32,7 @@ EOF
 case "$DISTRO" in
     ubuntu) ubuntu_sources ;;
     debian) debian_sources ;;
-    raspbian) rpi_sources ;;
+    raspbian) raspbian_sources ;;
     *) fatal "DISTRO is not set or not recognized" ;;
 esac
 
