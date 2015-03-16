@@ -22,8 +22,8 @@ EOF
 
 raspbian_sources() {
 cat >/etc/apt/sources.list<<EOF
-deb http://mirrordirector.raspbian.org/raspbian wheezy main firmware
-deb http://archive.raspberrypi.org/debian wheezy main
+deb http://mirrordirector.raspbian.org/raspbian $CODENAME main firmware
+deb http://archive.raspberrypi.org/debian $CODENAME main
 EOF
 }
 
