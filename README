@@ -30,7 +30,7 @@ if this is a transition
 mkdir build/root.patched/root/builddeps
 cp -a /turnkey/public/turnkey-pylib build/root.patched/root/builddeps
 cp -a /turnkey/public/pyproject build/root.patched/root/builddeps
-cp -a /turnkey/private/autoversion build/root.patched/root/builddeps
+cp -a /turnkey/public/autoversion build/root.patched/root/builddeps
 
 fab-chroot build/root.patched
 for p in turnkey-pylib pyproject autoversion; do
