@@ -62,11 +62,27 @@ patch -f /usr/bin/dpkg-gencontrol << 'EOF'
 EOF
 }
 
+jessie_patch() {
+patch -f /usr/bin/dpkg-gencontrol << 'EOF'
+--- dpkg-gencontrol.orig        2015-04-21 13:43:52.000000000 +0300
++++ dpkg-gencontrol     2015-04-21 13:45:28.000000000 +0300
+@@ -341,6 +341,7 @@
+     if (!$c) {
+         chdir("$packagebuilddir")
+             or syserr(_g("chdir for du to \`%s'"), $packagebuilddir);
++        system("find -type f | xargs touch"); # workaround for evil aufs bug
+         exec('du', '-k', '-s', '--apparent-size', '.')
+             or syserr(_g('unable to execute %s'), 'du');
+     }
+EOF
+}
+
 case "$CODENAME" in
     lucid) lucid_patch ;;
     lenny) lenny_patch ;;
     squeeze) squeeze_patch ;;
     wheezy) wheezy_patch ;;
+    jessie) jessie_patch ;;
     *) fatal "CODENAME is not set or not recognized" ;;
 esac
 
