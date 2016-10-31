@@ -36,3 +36,14 @@ case "$DISTRO" in
     *) fatal "DISTRO is not set or not recognized" ;;
 esac
 
+# hack for squeeze
+if [ "$CODENAME" == "squeeze" ]; then
+cat >/etc/apt/sources.list<<EOF
+deb http://archive.debian.org/debian squeeze main
+deb http://archive.debian.org/debian squeeze-lts main
+EOF
+cat >/etc/apt/apt.conf.d/check-valid<<EOF
+Acquire::Check-Valid-Until false;
+EOF
+fi
+
