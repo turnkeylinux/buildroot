@@ -36,7 +36,7 @@ fab-chroot build/root.patched
 for p in turnkey-pylib pyproject autoversion; do
     cd /root/builddeps/$p
     build-deb
-    dpkg -i ../${p}*.deb
+    dpkg -i ../${p}*.deb || apt --fix-broken install
 done
 
 rm -rf /root/builddeps

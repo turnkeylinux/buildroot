@@ -83,6 +83,7 @@ case "$CODENAME" in
     squeeze) squeeze_patch ;;
     wheezy) wheezy_patch ;;
     jessie) jessie_patch ;;
+    stretch) : ;; # uses overlayfs instead of aufs
     *) fatal "CODENAME is not set or not recognized" ;;
 esac
 

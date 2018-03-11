@@ -58,7 +58,7 @@ $name ($version) $release; urgency=low
  -- Alon Swartz <alon@turnkeylinux.org>  $(date -R)
 EOF
 
-dpkg-buildpackage -b -tc -us -uc
+dpkg-buildpackage -d -b -tc -us -uc
 
 rm -f clean
 rm -f debian/changelog
