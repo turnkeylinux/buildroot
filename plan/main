@@ -2,16 +2,22 @@ build-essential
 fakeroot
 debhelper
 cdbs
-git-core
+git                     /* git-core is now virtual pkg provided by git */
 aptitude
 docbook-utils
+texlive-formats-extra   /* provides virtual pkg jadetex - docbook-utils dep */
 xmlto
 unzip
 lsb-release
+dh-systemd              /* commonly required pacakge; so let's pre-install it */
 
 faketime
 
 /* pythondialog */
 python-all-dev
 python-all
+python3-all-dev         /* include py3 tools now in buster */
+python3-all             /* include py3 tools now in buster */
 
+/* these are turnkey build dependends - best installed in buildroot from pool */
+turnkey-lazyclass
