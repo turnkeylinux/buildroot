@@ -2,8 +2,9 @@
 # Copyright (c) 2020 TurnKey GNU/Linux - https://www.turnkeylinux.org
 
 ifndef RELEASE
+DISTRO := $(shell lsb_release -is | tr [:upper:] [:lower:])
 CODENAME := $(shell lsb_release -sc)
-AUTORELEASE := debian/$(CODENAME)
+AUTORELEASE := $(DISTRO)/$(CODENAME)
 $(info RELEASE not defined - falling back to system: '$(AUTORELEASE)')
 RELEASE := $(AUTORELEASE)
 endif
