@@ -1,13 +1,15 @@
 #!/usr/bin/make -f
-# Copyright (c) 2020 TurnKey GNU/Linux - https://www.turnkeylinux.org
+# Copyright (c) 2020-2021 TurnKey GNU/Linux - https://www.turnkeylinux.org
+
+LOCAL_DISTRO := $(shell lsb_release -si | tr [A-Z] [a-z])
+LOCAL_CODENAME := $(shell lsb_release -sc)
+LOCAL_RELEASE := $(LOCAL_DISTRO)/$(LOCAL_CODENAME)
 
 ifndef RELEASE
-DISTRO := $(shell lsb_release -is | tr [:upper:] [:lower:])
-CODENAME := $(shell lsb_release -sc)
-AUTORELEASE := $(DISTRO)/$(CODENAME)
-$(info RELEASE not defined - falling back to system: '$(AUTORELEASE)')
-RELEASE := $(AUTORELEASE)
+$(info RELEASE not defined - falling back to system: '$(LOCAL_RELEASE)')
+RELEASE := $(LOCAL_RELEASE)
 endif
+CERT_PATH := usr/local/share/ca-certificates
 
 .PHONY: any
 all: install
@@ -22,9 +24,9 @@ define bootstrap/post
 	fab-apply-overlay $(COMMON_OVERLAYS_PATH)/bootstrap_apt $O/bootstrap;
 	fab-chroot $O/bootstrap "echo nameserver 8.8.8.8 > /etc/resolv.conf";
 	fab-chroot $O/bootstrap "echo nameserver 8.8.4.4 >> /etc/resolv.conf";
-	mkdir -p $O/bootstrap/usr/local/share/ca-certificates/;
+	mkdir -p $O/bootstrap/$(CERT_PATH);
 	# temporarily allow cert to not exist
-	cp /usr/local/share/ca-certificates/squid_proxyCA.crt $O/bootstrap/usr/local/share/ca-certificates/ || true;
+	cp /$(CERT_PATH)/squid_proxyCA.crt $O/bootstrap/$(CERT_PATH)/ || true; 
 	fab-chroot $O/bootstrap --script $(COMMON_CONF_PATH)/bootstrap_apt;
 endef
 
