@@ -11,8 +11,8 @@ RELEASE := $(LOCAL_RELEASE)
 endif
 CERT_PATH := usr/local/share/ca-certificates
 
-.PHONY: any
-all: install
+.PHONY: complete
+complete: install
 
 BUILDROOT := y
 FAB_SHARE_PATH ?= /usr/share/fab
@@ -44,4 +44,4 @@ transition: root.patched
 install: root.patched
 	fab-chroot $O/root.patched "apt-get update && apt-get install -y turnkey-lazyclass turnkey-gitwrapper verseek autoversion" \
 		|| (echo "Apt failed; is this a transition? If so, please check README for final steps to install required TurnKey software & rsync."; exit 1);
-	fab-chroot $O/root.patched "apt-get clean"
+	fab-chroot $O/root.patched "apt-get clean";
