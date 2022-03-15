@@ -9,7 +9,6 @@ texlive-formats-extra   /* provides virtual pkg jadetex - docbook-utils dep */
 xmlto
 unzip
 lsb-release
-dh-systemd              /* commonly required package; so let's pre-install it */
 
 faketime
 
