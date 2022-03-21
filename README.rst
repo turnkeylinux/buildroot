@@ -1,7 +1,7 @@
 build
 =====
 
-A buildroot is a root filesystem designed to be used as a chrrot to build
+A buildroot is a root filesystem designed to be used as a chroot to build
 packages within.
 
 It assumes that you have already configured a bootstrap. This should already
@@ -10,7 +10,7 @@ exist on TKLDev by default. Otherwise please see the bootstrap_ repo.
 Build buildroot for current release
 -----------------------------------
 
-This requires that the TurnKey dependencies ahve been built and uploaded to the
+This requires that the TurnKey dependencies have been built and uploaded to the
 TurnKey repos.::
 
     make clean
