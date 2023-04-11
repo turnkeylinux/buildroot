@@ -5,7 +5,7 @@ A buildroot is a root filesystem designed to be used as a chroot to build
 packages within.
 
 It assumes that you have already configured a bootstrap. This should already
-exist on TKLDev by default. Otherwise please see the bootstrap_ repo.
+exist on TKLDev by default. Otherwise please see the `bootstrap`_ repo.
 
 Build buildroot for current release
 -----------------------------------
@@ -64,4 +64,4 @@ localation (default: ${FAB_PATH}/buildroots/::CODENAME::).::
     mkdir -p ${FAB_PATH}/buildroots/$(basename $RELEASE)
     rsync --delete -Hac -v build/root.patched/ $FAB_PATH/buildroots/$(basename $RELEASE)/
 
-.. bootstrap: https://github.com/turnkeylinux/bootstrap
+.. _bootstrap: https://github.com/turnkeylinux/bootstrap

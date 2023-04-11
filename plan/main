@@ -13,7 +13,9 @@ lsb-release
 faketime
 
 /* pythondialog */
-python-all-dev
-python-all
 python3-all-dev         /* include py3 tools now in buster */
 python3-all             /* include py3 tools now in buster */
+dh-python
+python3-setuptools
+python3-typing-extensions
+python3-pycurl
