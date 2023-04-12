@@ -17,7 +17,7 @@ CERT_PATH := usr/local/share/ca-certificates
 PACKAGES := turnkey-gitwrapper autoversion verseek turnkey-chroot
 
 .PHONY: complete
-complete: install
+complete: pkg_install
 
 BUILDROOT := y
 FAB_SHARE_PATH ?= /usr/share/fab
@@ -45,14 +45,16 @@ define root.patched/cleanup
 		fi
 endef
 
-ifneq ($(LOCAL_RELEASE),$(RELEASE))
-export TRANSITION_NO_TURNKEY_APT_REPO=y
-install: transition_pkg_install
-	rsync --delete -Hac $O/root.patched/ $(FAB_PATH)/buildroots/$$(basename $$RELEASE)/
-else
 install: pkg_install
 	rsync --delete -Hac $O/root.patched/ $(FAB_PATH)/buildroots/$$(basename $$RELEASE)/
+
+ifneq ($(LOCAL_RELEASE),$(RELEASE))
+export TRANSITION_NO_TURNKEY_APT_REPO=y
+pkg_install: transition_pkg_install
+else
+pkg_install: normal_pkg_install
 endif
+
 
 .PHONY: transition_pkg_install
 transition_pkg_install: root.patched
@@ -69,8 +71,8 @@ transition_pkg_install: root.patched
 	\
 	fab-chroot --script "$O/../scripts/install_packages.sh" "$O/root.patched"
 
-.PHONY: pkg_install
-pkg_install: root.patched
+.PHONY: normal_pkg_install
+normal_pkg_install: root.patched
 	fab-chroot $O/root.patched "apt-get update && apt-get install -y turnkey-lazyclass turnkey-gitwrapper verseek autoversion" \
 		|| (echo "Apt failed; is this a transition? If so, please check README for final steps to install required TurnKey software & rsync."; exit 1);
 	fab-chroot $O/root.patched "apt-get clean";

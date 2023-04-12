@@ -16,6 +16,11 @@ TurnKey repos.::
     make clean
     make
 
+By default ``make`` builds to the ``pkg_install`` target, if you intend on using
+this buildroot directly, you can build straight to the ``install`` target (which
+installs the buildroot to ``$FAB_PATH/buildroots/$(basename $RELEASE)``::
+
+    make install
 
 Build buildroot for transition (new release)
 --------------------------------------------
@@ -26,42 +31,19 @@ TurnKey apt repo. If the source code isn't already available locally
 
     export RELEASE=debian/::CODENAME::
     make clean
-    make transition
+    make
 
-Then install the required packages::
-
-    PACKAGES="turnkey-gitwrapper verseek autoversion"
-    mkdir -p build/root.patched/root/builddeps
-    for pkg in ${PACKAGES}; do
-        LOCAL="/turnkey/public/${pkg}"
-        mkdir -p $(dirname ${LOCAL})
-        if [[ ! -d "${LOCAL}" ]]; then
-            GH_URL=https://github.com/turnkeylinux/${pkg}.git
-            git clone ${GH_URL} ${LOCAL}
-        fi
-        cp -a ${LOCAL} build/root.patched/root/builddeps
-    done
-
-    mkdir build/root.patched/root/builddeps
-    fab-chroot build/root.patched
-    for pkg in $PACKAGES; do
-        cd /root/builddeps/${pkg}
-        build-deb
-        dpkg -i ../${pkg}*.deb || apt --fix-broken install
-    done
-
-    rm -rf /root/builddeps
-    exit
-
+Note by default this assumes the turnkeylinux repos are not available so will
+build each of the dependencies from source.
 
 Copy generated buildroot to buildroots folder
 ---------------------------------------------
 
 Once the buildroot is complete, then it needs to be copied to the desired
-localation (default: ${FAB_PATH}/buildroots/::CODENAME::).::
+location (default: ${FAB_PATH}/buildroots/::CODENAME::).
 
-    RELEASE=${RELEASE:-debian/$(lsb_release -sc)}
-    mkdir -p ${FAB_PATH}/buildroots/$(basename $RELEASE)
-    rsync --delete -Hac -v build/root.patched/ $FAB_PATH/buildroots/$(basename $RELEASE)/
+Whether building a transition or not the ``install`` target does this for you::
+
+    make install
 
 .. _bootstrap: https://github.com/turnkeylinux/bootstrap
