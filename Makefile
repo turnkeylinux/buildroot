@@ -45,7 +45,7 @@ endef
 define root.patched/cleanup
         # kill stray processes
         fuser -k $O/root.patched || true;\
-		if [ -f $O/root.patched/turnkey-transition-info ]; then\
+		if [ -f $O/root.patched/turnkey-buildenv ]; then\
 			echo "note this is a transitional build, some functionality will be disabled";\
 		fi
 endef
@@ -53,6 +53,7 @@ endef
 install: pkg_install
 	rsync --delete -Hac $O/root.patched/ $(FAB_PATH)/buildroots/$$(basename $$RELEASE)/
 
+pkg_install: normal_pkg_install
 ifdef NO_TURNKEY_APT_REPO
 pkg_install: transition_pkg_install
 else
@@ -60,7 +61,6 @@ ifneq ($(HOST_RELEASE),$(RELEASE))
 $(info # transition detected - building $(RELEASE) on $(HOST_RELEASE))
 $(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
 endif
-pkg_install: normal_pkg_install
 endif
 
 .PHONY: transition_pkg_install
