@@ -41,7 +41,7 @@ out). E.g.::
 
 Note that this will build each of the TurnKey dependencies from source. If the
 source code isn't already available locally (in '/turnkey/public/${pkg}') it
-will be cloned there from GitHub.
+will be cloned there from GitHub (assuming internet access).
 
 If all the required TurnKey dependencies are available, but only in the
 turnkey-testing repo (as is likely early in the transition process), then
