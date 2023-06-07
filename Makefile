@@ -1,19 +1,20 @@
 #!/usr/bin/make -f
 # Copyright (c) 2020-2021 TurnKey GNU/Linux - https://www.turnkeylinux.org
 
-LOCAL_DISTRO := $(shell lsb_release -si | tr [A-Z] [a-z])
-LOCAL_CODENAME := $(shell lsb_release -sc)
-LOCAL_RELEASE := $(LOCAL_DISTRO)/$(LOCAL_CODENAME)
+HOST_DISTRO := $(shell lsb_release -si | tr [A-Z] [a-z])
+HOST_CODENAME := $(shell lsb_release -sc)
+HOST_DEB_VER := $(shell lsb_release -sr)
+HOST_RELEASE := $(HOST_DISTRO)/$(HOST_CODENAME)
 SHELL := /bin/bash
 
 ifndef RELEASE
-$(info RELEASE not defined - falling back to system: '$(LOCAL_RELEASE)')
-RELEASE := $(LOCAL_RELEASE)
+$(info RELEASE not defined - falling back to system: '$(HOST_RELEASE)')
+RELEASE := $(HOST_RELEASE)
 endif
 CERT_PATH := usr/local/share/ca-certificates
 
 # transitional related
-# note: these packages will be build & installed in the order they're defined
+# note: these packages will be built & installed in the order they're defined
 PACKAGES := turnkey-gitwrapper autoversion verseek turnkey-chroot
 
 .PHONY: complete
@@ -22,25 +23,29 @@ complete: pkg_install
 BUILDROOT := y
 FAB_SHARE_PATH ?= /usr/share/fab
 include $(FAB_SHARE_PATH)/product.mk
-
 # setup apt and dns for root.build
 define bootstrap/post
-	if [ -n "$(TRANSITION_NO_TURNKEY_APT_REPO)" ]; then \
-		echo "TRANSITION_NO_TURNKEY_APT_REPO" > $O/bootstrap/turnkey-transition-info; \
+	echo "export RELEASE=$(RELEASE)" > $O/bootstrap/turnkey-buildenv;
+	echo "export HOST_DEB_VER=$(HOST_DEB_VER)" >> $O/bootstrap/turnkey-buildenv;
+	if [ -n "$(NO_TURNKEY_APT_REPO)" ]; then \
+		echo "export NO_TURNKEY_APT_REPO=y" >> $O/bootstrap/turnkey-buildenv; \
+	fi
+	if [ -n "$(TKL_TESTING)" ]; then \
+		echo "export TKL_TESTING=y" >> $O/bootstrap/turnkey-buildenv; \
 	fi
 	fab-apply-overlay $(COMMON_OVERLAYS_PATH)/bootstrap_apt $O/bootstrap;
 	fab-chroot $O/bootstrap "echo nameserver 8.8.8.8 > /etc/resolv.conf";
 	fab-chroot $O/bootstrap "echo nameserver 8.8.4.4 >> /etc/resolv.conf";
 	mkdir -p $O/bootstrap/$(CERT_PATH);
 	# temporarily allow cert to not exist
-	cp /$(CERT_PATH)/squid_proxyCA.crt $O/bootstrap/$(CERT_PATH)/ || true; 
+	cp /$(CERT_PATH)/squid_proxyCA.crt $O/bootstrap/$(CERT_PATH)/ || true;
 	fab-chroot $O/bootstrap --script $(COMMON_CONF_PATH)/bootstrap_apt;
 endef
 
 define root.patched/cleanup
         # kill stray processes
         fuser -k $O/root.patched || true;\
-		if [ -f $O/root.patched/turnkey-transition-info ]; then\
+		if [ -f $O/root.patched/turnkey-buildenv ]; then\
 			echo "note this is a transitional build, some functionality will be disabled";\
 		fi
 endef
@@ -48,13 +53,15 @@ endef
 install: pkg_install
 	rsync --delete -Hac $O/root.patched/ $(FAB_PATH)/buildroots/$$(basename $$RELEASE)/
 
-ifneq ($(LOCAL_RELEASE),$(RELEASE))
-export TRANSITION_NO_TURNKEY_APT_REPO=y
+pkg_install: normal_pkg_install
+ifdef NO_TURNKEY_APT_REPO
 pkg_install: transition_pkg_install
 else
-pkg_install: normal_pkg_install
+ifneq ($(HOST_RELEASE),$(RELEASE))
+$(info # transition detected - building $(RELEASE) on $(HOST_RELEASE))
+$(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
 endif
-
+endif
 
 .PHONY: transition_pkg_install
 transition_pkg_install: root.patched
