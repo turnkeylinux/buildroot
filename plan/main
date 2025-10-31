@@ -5,8 +5,6 @@ debhelper
 cdbs
 git
 aptitude
-docbook-utils
-texlive-formats-extra   /* provides virtual pkg jadetex - docbook-utils dep */
 xmlto
 unzip
 lsb-release
