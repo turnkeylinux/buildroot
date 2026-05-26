@@ -113,7 +113,7 @@ endef
 
 install: pkg_install
 	mkdir -p $(BUILDROOTS_PATH)
-	rsync --delete -Hac $O/root.patched/ $(BUILDROOTS_PATH)/$(CHROOT_DIR)/
+	rsync --delete -Hac $O/root.patched/ $(CHROOT_DIR)/
 
 pkg_install: normal_pkg_install
 ifdef NO_TURNKEY_APT_REPO
