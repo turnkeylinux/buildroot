@@ -47,6 +47,31 @@ complete: pkg_install
 
 include $(FAB_SHARE_PATH)/product.mk
 
+define help/pre
+    @echo
+    @echo 'Configurable variables'
+    @echo '======================'
+    @echo '  Env var                    [VALUE]'
+    @echo '  -------                    -------'
+    @echo '# General config'
+    @echo '  FAB_PATH (required)        $(value FAB_PATH)'
+    @echo '  FAB_ARCH                   $(value FAB_ARCH)'
+    @echo '  RELEASE                    $(value RELEASE)'
+    @echo
+    @echo '# Base paths'
+    @echo '  BOOTSTRAPS_PATH            $(value BOOTSTRAPS_PATH)'
+    @echo '  BUILDROOTS_PATH            $(value BUILDROOTS_PATH)'
+    @echo
+    @echo '# Target paths (overrides base path/s if set)'
+    @echo '  CHROOT_DIR                 $(value CHROOT_DIR)'
+    @echo '  BOOTSTRAP                  $(value BOOTSTRAP)'
+endef
+
+# override full fab product.mk help
+define help/body
+    @echo
+endef
+
 # setup apt and dns for root.build
 define bootstrap/post
 	echo "export RELEASE=$(RELEASE)" > $O/bootstrap/turnkey-buildenv;
