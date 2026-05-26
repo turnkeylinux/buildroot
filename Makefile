@@ -27,6 +27,8 @@ else
   BOOTSTRAPS_PATH ?= $(FAB_PATH)/bootstraps
   BUILDROOTS_PATH ?= $(FAB_PATH)/buildroots
 endif
+BOOTSTRAPS_PATH := $(BOOTSTRAPS_PATH)
+BUILDROOTS_PATH := $(BUILDROOTS_PATH)
 
 ifndef RELEASE
   $(info RELEASE not defined - falling back to system: '$(HOST_RELEASE)')
@@ -39,8 +41,9 @@ ifndef FAB_ARCH
 endif
 
 DEFAULT_DIR := $(shell basename $(RELEASE))-$(FAB_ARCH)
-CHROOT_DIR ?= $(BUILDROOTS_PATH)/$(DEFAULT_DIR)
 BOOTSTRAP ?= $(BOOTSTRAPS_PATH)/$(DEFAULT_DIR)
+CHROOT_DIR ?= $(BUILDROOTS_PATH)/$(DEFAULT_DIR)
+CHROOT_DIR := $(CHROOT_DIR)
 
 .PHONY: complete
 complete: pkg_install
@@ -57,6 +60,8 @@ define help/pre
     @echo '  FAB_PATH (required)        $(value FAB_PATH)'
     @echo '  FAB_ARCH                   $(value FAB_ARCH)'
     @echo '  RELEASE                    $(value RELEASE)'
+    @echo '  TKL_TESTING=y              # enable Turnkey testing repo'
+    @echo '  NO_PROXY=true              # disable proxy caching'
     @echo
     @echo '# Base paths'
     @echo '  BOOTSTRAPS_PATH            $(value BOOTSTRAPS_PATH)'
