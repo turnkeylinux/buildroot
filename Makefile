@@ -8,43 +8,45 @@ HOST_RELEASE := $(HOST_DISTRO)/$(HOST_CODENAME)
 HOST_ARCH := $(shell dpkg --print-architecture)
 SHELL := /bin/bash
 
-ifdef SUDO_USER
-$(info running as sudo)
-SUDO := running as sudo - set FAB_PATH explicitly
-endif
-
-ifndef FAB_PATH
-$(error FAB_PATH is not set $(SUDO))
-else
-BOOTSTRAPS_PATH ?= $(FAB_PATH)/bootstraps
-BUILDROOTS_PATH ?= $(FAB_PATH)/buildroots
-endif
-
-ifndef RELEASE
-$(info RELEASE not defined - falling back to system: '$(HOST_RELEASE)')
-RELEASE := $(HOST_RELEASE)
-endif
-
-ifndef FAB_ARCH
-$(info FAB_ARCH not defined - falling back to system: '$(HOST_ARCH)')
-FAB_ARCH := $(HOST_ARCH)
-endif
-
-CHROOT_DIR = $(shell basename $(RELEASE))-$(FAB_ARCH)
-BOOTSTRAP ?= $(BOOTSTRAPS_PATH)/$(CHROOT_DIR)
-
 CERT_PATH := usr/local/share/ca-certificates
+BUILDROOT := y
+FAB_SHARE_PATH ?= /usr/share/fab
 
 # transitional related
 # note: these packages will be built & installed in the order they're defined
 PACKAGES := turnkey-gitwrapper autoversion verseek turnkey-chroot
 
+ifdef SUDO_USER
+  $(info running as sudo)
+  SUDO := running as sudo - set FAB_PATH explicitly
+endif
+
+ifndef FAB_PATH
+  $(error FAB_PATH is not set $(SUDO))
+else
+  BOOTSTRAPS_PATH ?= $(FAB_PATH)/bootstraps
+  BUILDROOTS_PATH ?= $(FAB_PATH)/buildroots
+endif
+
+ifndef RELEASE
+  $(info RELEASE not defined - falling back to system: '$(HOST_RELEASE)')
+  RELEASE := $(HOST_RELEASE)
+endif
+
+ifndef FAB_ARCH
+  $(info FAB_ARCH not defined - falling back to system: '$(HOST_ARCH)')
+  FAB_ARCH := $(HOST_ARCH)
+endif
+
+DEFAULT_DIR := $(shell basename $(RELEASE))-$(FAB_ARCH)
+CHROOT_DIR ?= $(BUILDROOTS_PATH)/$(DEFAULT_DIR)
+BOOTSTRAP ?= $(BOOTSTRAPS_PATH)/$(DEFAULT_DIR)
+
 .PHONY: complete
 complete: pkg_install
 
-BUILDROOT := y
-FAB_SHARE_PATH ?= /usr/share/fab
 include $(FAB_SHARE_PATH)/product.mk
+
 # setup apt and dns for root.build
 define bootstrap/post
 	echo "export RELEASE=$(RELEASE)" > $O/bootstrap/turnkey-buildenv;
@@ -85,16 +87,16 @@ install: pkg_install
 
 pkg_install: normal_pkg_install
 ifdef NO_TURNKEY_APT_REPO
-pkg_install: transition_pkg_install
+  pkg_install: transition_pkg_install
 else
-ifneq ($(HOST_RELEASE),$(RELEASE))
-$(info # transition detected - building $(RELEASE) on $(HOST_RELEASE))
-$(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
-endif
-ifneq ($(HOST_ARCH),$(FAB_ARCH))
-$(info # build on foreign architecture detected - building $(FAB_ARCH) on $(HOST_ARCH))
-$(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
-endif
+  ifneq ($(HOST_RELEASE),$(RELEASE))
+    $(info # transition detected - building $(RELEASE) on $(HOST_RELEASE))
+    $(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
+  endif
+  ifneq ($(HOST_ARCH),$(FAB_ARCH))
+    $(info # build on foreign architecture detected - building $(FAB_ARCH) on $(HOST_ARCH))
+    $(info # to disable TKL apt repos rerun with NO_TURNKEY_APT_REPO=y set)
+  endif
 endif
 
 .PHONY: transition_pkg_install
